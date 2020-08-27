@@ -1,4 +1,4 @@
-# https://qiita.com/neet-AI/items/2b3d7f743e4d6c6d8e10
+# %%
 #! -*- coding: utf-8 -*-
 import glob
 import numpy as np
@@ -29,16 +29,16 @@ hw = {"height":32, "width":32}        # リストではなく辞書型 中かっ
 def PreProcess(dirname, filename, var_amount=3):
     num = 0
     arrlist = []
-    files = glob.glob(dirname + "/*.jpg")
+    files = glob.glob(dirname + "/*.jpeg")
 
     for imgfile in files:
         img = load_img(imgfile, target_size=(hw["height"], hw["width"]))    # 画像ファイルの読み込み
         array = img_to_array(img) / 255                                     # 画像ファイルのnumpy化
         arrlist.append(array)                 # numpy型データをリストに追加
-#        for i in range(var_amount-1):
-#            arr2 = array
-#            arr2 = random_rotation(arr2, rg=360)
-#            arrlist.append(arr2)              # numpy型データをリストに追加
+        for i in range(var_amount-1):
+            arr2 = array
+            arr2 = random_rotation(arr2, rg=360)
+            arrlist.append(arr2)              # numpy型データをリストに追加
         num += 1
 
     nplist = np.array(arrlist)
@@ -142,14 +142,15 @@ def TestProcess(imgname):
     modelname_text = open("model.json").read()
     json_strings = modelname_text.split('##########')
     textlist = json_strings[1].replace("[", "").replace("]", "").replace("\'", "").split()
-    print("1")
     model = model_from_json(json_strings[0])
-    print("2")
     model.load_weights("last.hdf5")  # best.hdf5 で損失最小のパラメータを使用
-    print("3")
     img = load_img(imgname, target_size=(hw["height"], hw["width"]))    
     TEST = img_to_array(img) / 255
 
     pred = model.predict(np.array([TEST]), batch_size=1, verbose=0)
     print(">> 計算結果↓\n" + str(pred))
     print(">> この画像は「" + textlist[np.argmax(pred)].replace(",", "") + "」です。")
+
+
+
+# %%
